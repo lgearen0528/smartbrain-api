@@ -1,7 +1,10 @@
 {
   "name": "smartbrain-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "script.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
