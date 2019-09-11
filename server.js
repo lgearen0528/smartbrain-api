@@ -2,6 +2,21 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require('bcryptjs')
 const cors = require('cors')
+const knex = require('knex')
+
+const db = knex({
+  client: 'pg',
+  connection: {
+    host : '127.0.0.1',
+    user : 'postgres',
+    password : '4583',
+    database : 'smart-brain'
+  }
+});
+
+console.log(db.select('*').from('users').then(data => {
+  console.log(data)
+}));
 
 const app = express();
 app.use(bodyParser.json());
@@ -58,18 +73,21 @@ app.post("/signin", (req, res) => {
 
 app.post("/register", (req, res) => {
   const { email, name } = req.body;
-  database.users.push({
-    id: "125",
-    name,
-    email,
-    entries: 0,
-    joined: new Date()
-  });
+  db('users')
+    .returning('*')
+    .insert({
+      email,
+      name,
+      joined: new Date()
+  })
+  .then(user => {
+    res.json(user[0])
+  })
+  .catch(err => res.status(400).json('unable to register'))
   // const saltRounds = 10;
   // bcrypt.hash(password, saltRounds, (err, hash)=>{
   //   console.log(hash)
   // })
-  res.json(database.users[database.users.length - 1]);
 });
 
 app.get("/profile/:id", (req, res) => {
